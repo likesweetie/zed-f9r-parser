@@ -97,8 +97,12 @@ class I2CGNSSParser:
 
         w = i2c_msg.write(self.addr, [0xFD])
         r = i2c_msg.read(self.addr, 2)
-        self._bus.i2c_rdwr(w, r)
-        b0, b1 = list(r)
+        try :
+            self._bus.i2c_rdwr(w, r)
+            b0, b1 = list(r)
+        except:
+            b0, b1 = 0, 0
+            print("i2c Failed!")
 
         # default: b0=LSB, b1=MSB  -> avail = (MSB<<8)|LSB
         # swap:    b0=MSB, b1=LSB  -> avail = (MSB<<8)|LSB = (b0<<8)|b1
@@ -147,7 +151,7 @@ class I2CGNSSParser:
             self.ucm.set_origin_from_latlon(lat, lon)
             self._origin_set = True
 
-        x_m, y_m = self.ucm.to_local_xy(lat, lon)
+        x_m, y_m = self.ucm.to_global_xy(lat, lon)
         return UCMResult(
             epoch_id=frame.epoch_id,
             t_recv_s=getattr(frame, "t_recv_s", time.time()),
@@ -204,7 +208,8 @@ class I2CGNSSParser:
                         if u is not None:
                             if self.on_ucm is not None:
                                 ucm_result = self.on_ucm(u)
-                                self.last_succesful_ucm(ucm_result.x_m, ucm_result.y_m)
+                                if ucm_result is not None:
+                                    self.last_succesful_ucm(ucm_result.x_m, ucm_result.y_m)
                             else:
                                 self._pending_ucm.append(u)
 

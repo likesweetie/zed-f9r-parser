@@ -149,6 +149,19 @@ class UCMConverter:
         return x, y
 
 
+    def to_global_xy(self, lat_deg: float, lon_deg: float) -> Tuple[float, float]:
+        """
+        Global XY in meters of UTM.
+        - X: east (m)
+        - Y: north (m)
+        """
+        if self._origin_utm is None:
+            raise RuntimeError("Origin not set. Call set_origin_from_latlon() first.")
+        cur = latlon_to_utm(lat_deg, lon_deg, zone=self._origin_utm.zone)
+        x = cur.easting_m
+        y = cur.northing_m
+        return x, y
+
 # ---------------------------
 # Integration helper for NMEADecoder frames/messages
 # ---------------------------

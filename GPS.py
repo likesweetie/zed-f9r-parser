@@ -101,7 +101,8 @@ def main(args=[MULTI_CAST_ADDR, CHANNEL]):
     # poll()이 EpochFrame을 반환한다고 가정합니다.
     with I2CGNSSParser(i2c_bus=1, addr=0x42, fixed_zone=52, on_ucm=on_ucm) as gps:
         while True:
-            frame = gps.poll()  # <-- EpochFrame | None (가정)
+            _ = gps.poll()  # <-- EpochFrame | None (가정)
+            frame = gps.last_succesful_frame
             if frame is None:
                 time.sleep(0.001)
                 continue
@@ -111,10 +112,6 @@ def main(args=[MULTI_CAST_ADDR, CHANNEL]):
 
             msg = pack_gps_msg(frame, ucm)
             pub.publish_gps(msg)
-
-            # 200 Hz로 쏘고 싶으면 sleep(0.005)이지만,
-            # GNSS가 1~10 Hz라면 frame이 있는 경우만 발행하는 편이 더 의미 있습니다.
-            # 필요시 throttling을 여기서 하시면 됩니다.
             time.sleep(0.005)
 
 
