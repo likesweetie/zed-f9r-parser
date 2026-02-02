@@ -1,0 +1,28 @@
+package gps_lcm_type;
+
+struct gps_t
+{
+
+    int64_t epoch;
+
+    int64_t timestamp;
+    boolean is_ucm_valid;
+    double ucm_x;
+    double ucm_y;
+
+
+    boolean is_gga_alive;
+    double gga_lat;
+    double gga_lon;
+    int8_t gga_fixq;
+    int8_t gga_nsat;
+    double gga_hdop;
+    double gga_alt;
+    double gga_geoid;
+
+
+    boolean is_rmc_alive;
+    double sog_mps;
+    double cog_deg;
+    
+}
